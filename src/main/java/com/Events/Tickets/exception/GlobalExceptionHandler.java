@@ -1,8 +1,6 @@
 package com.Events.Tickets.exception;
 
-import com.Events.Tickets.dto.response.ErrorResponseDTO;
-import com.Events.Tickets.exception.DataConflictException;
-import com.Events.Tickets.exception.ResourceNotFoundException;
+import com.Events.Tickets.infraestructura.adapters.in.web.dto.response.ErrorResponseDTO;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
