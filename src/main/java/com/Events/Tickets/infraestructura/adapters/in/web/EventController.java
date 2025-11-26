@@ -11,11 +11,15 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -70,11 +74,19 @@ public class EventController {
     public ResponseEntity<List<EventResponseDTO>> findEventsFiltered(
             @RequestParam(required = false) String city,
             @RequestParam(required = false) EventType eventType,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant startDate,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
+        // Conversion de tipo de dato de la fecha
+        LocalDateTime localDateTime = null;
+        if (startDate != null) {
+            // El Instant se convierte a la zona de sistema y luego a LocalDateTime.
+            localDateTime = startDate.atZone(ZoneId.systemDefault()).toLocalDateTime();
+        }
+
         // 1. Ejecutar Caso de Uso
-        List<Event> eventList = manageEventUseCase.findEvents(city, eventType, page, size);
+        List<Event> eventList = manageEventUseCase.findEvents(city, eventType, localDateTime, page, size);
 
         // 2. List<Domain> -> List<DTO>
         return ResponseEntity.ok(eventList.stream()

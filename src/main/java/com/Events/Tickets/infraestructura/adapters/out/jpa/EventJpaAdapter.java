@@ -7,13 +7,20 @@ import com.Events.Tickets.dominio.ports.out.VenueRepositoryPort;
 import com.Events.Tickets.entity.EventType;
 import com.Events.Tickets.exception.ResourceNotFoundException;
 import com.Events.Tickets.infraestructura.adapters.out.jpa.entity.EventEntity;
+import com.Events.Tickets.infraestructura.adapters.out.jpa.entity.VenueEntity;
 import com.Events.Tickets.infraestructura.adapters.out.jpa.mappers.EventJpaMapper;
 import com.Events.Tickets.infraestructura.adapters.out.jpa.repository.EventRepository;
+import com.Events.Tickets.infraestructura.adapters.out.jpa.repository.VenueRepository;
+import com.Events.Tickets.infraestructura.adapters.out.jpa.specification.EventSpecifications;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -25,37 +32,41 @@ public class EventJpaAdapter implements EventRepositoryPort {
     private final EventRepository eventRepository;
     private final EventJpaMapper eventMapper;
     private final VenueRepositoryPort venueRepositoryPort;
+    private final VenueRepository venueRepository;
 
     @Override
     public Event create(Event event) {
 
-        // Validamos el id de el venue
+        // 1. Obtener el ID del Venue del objeto de Dominio
         Long venueId = event.getVenue().getId();
 
-        // Buscamos el venue con ese id
-        Venue existingVenue = venueRepositoryPort.findById(venueId).orElseThrow(()-> new RuntimeException("Location (Venue) not found" + venueId));
-
-        // Validamos ya exista el venue
-        event.setVenue(existingVenue);
-
-        // Traduciomos de dominio a entidad
+        // 2. Mapeamos el objeto de Dominio a la Entidad
         EventEntity entityToSave = eventMapper.toEntity(event);
 
-        // Realizamos la consulta
+        // 3. Obtenemos una REFERENCIA/PROXY del VenueEntity usando el ID.
+        VenueEntity managedVenueReference = venueRepository.getReferenceById(venueId);
+
+        // 4. Asignamos la referencia gestionada a la Entidad
+        entityToSave.setVenue(managedVenueReference);
+
+        // 5. Realizamos la consulta
         EventEntity savedEntity = eventRepository.save(entityToSave);
 
-        // Traducimos de entidad a dominio
+        // 6. Traducimos de entidad a dominio
         return eventMapper.toDomain(savedEntity);
     }
 
     @Override
     public Optional<Event> findById(Long id) {
-        return eventRepository.findById(id).map(eventMapper::toDomain);
+        return eventRepository.findByIdWithVenue(id).map(eventMapper::toDomain);
     }
 
     @Override
     public List<Event> findAll() {
-        return eventRepository.findAll().stream().map(eventMapper::toDomain).collect(Collectors.toList());
+        Pageable pageable = PageRequest.of(0, 50);
+        return eventRepository.findAllWithVenue(pageable).getContent().stream()
+                .map(eventMapper::toDomain)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -91,15 +102,32 @@ public class EventJpaAdapter implements EventRepositoryPort {
     }
 
     @Override
-    public List<Event> findEvents(String city, EventType eventType, int page, int size) {
+    public List<Event> findEvents(String city, EventType eventType, LocalDateTime startDate, int page, int size) {
 
-        // Traduccion de paginacion
-        PageRequest pagerequest = PageRequest.of(page,size);
+        // 1. Crear una lista de Specifications.
+        List<Specification<EventEntity>> specs = new ArrayList<>();
 
-        // Ejecutamos la consulta
-        Page<EventEntity> eventPage = eventRepository.findAllFiltered(city,eventType, pagerequest);
+        // Agregar especificaciones. Si alguna devuelve NULL, será ignorada por allOf.
+        specs.add(EventSpecifications.hasCity(city));
+        specs.add(EventSpecifications.hasType(eventType));
+        specs.add(EventSpecifications.startDateAfter(startDate));
 
-        // Hacemos la conversion de entidad a modelo de dominio y retornamos
-        return eventPage.getContent().stream().map(eventMapper::toDomain).collect(Collectors.toList());
+        // Unir todas las especificaciones con un AND lógico.
+        Specification<EventEntity> spec = Specification.allOf(specs);
+
+        // 2. Agregar la optimización FETCH al final (siempre)
+        // Esto asegura que la consulta cargue el Venue en una sola consulta.
+        spec = spec.and(EventSpecifications.fetchVenue());
+
+        // 3. Crear el Pageable
+        Pageable pageable = PageRequest.of(page, size);
+
+        // 4. Ejecutar la consulta con Specifications y Pageable
+        Page<EventEntity> result = eventRepository.findAll(spec, pageable);
+
+        // 5. Mapear y retornar
+        return result.getContent().stream()
+                .map(eventMapper::toDomain)
+                .collect(Collectors.toList());
     }
 }

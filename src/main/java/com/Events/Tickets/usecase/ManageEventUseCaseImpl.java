@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -68,7 +69,7 @@ public class ManageEventUseCaseImpl implements ManageEventUseCase {
     // ---------------- FIND EVENTS ----------------
     @Override
     @Transactional(readOnly = true)
-    public List<Event> findEvents(String city, EventType eventType, int page, int size){
-        return eventRepositoryPort.findEvents(city,eventType,page,size);
+    public List<Event> findEvents(String city, EventType eventType, LocalDateTime startDate, int page, int size){
+        return eventRepositoryPort.findEvents(city,eventType,startDate,page,size);
     }
 }
