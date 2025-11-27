@@ -1,7 +1,7 @@
 package com.Events.Tickets.infraestructura.adapters.out.jpa.repository;
 
 import com.Events.Tickets.infraestructura.adapters.out.jpa.entity.EventEntity;
-import com.Events.Tickets.entity.EventType;
+import com.Events.Tickets.dominio.enums.EventType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

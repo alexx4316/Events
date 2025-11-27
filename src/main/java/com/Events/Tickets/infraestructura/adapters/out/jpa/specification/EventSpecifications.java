@@ -1,8 +1,7 @@
 package com.Events.Tickets.infraestructura.adapters.out.jpa.specification;
 
 import com.Events.Tickets.infraestructura.adapters.out.jpa.entity.EventEntity;
-import com.Events.Tickets.infraestructura.adapters.out.jpa.entity.VenueEntity;
-import com.Events.Tickets.entity.EventType;
+import com.Events.Tickets.dominio.enums.EventType;
 import org.springframework.data.jpa.domain.Specification;
 import java.time.LocalDateTime;
 

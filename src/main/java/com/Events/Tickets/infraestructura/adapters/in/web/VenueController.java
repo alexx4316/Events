@@ -11,6 +11,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,6 +29,7 @@ public class VenueController {
     // ------------------ 1. POST /venues (Crear) ------------------
     @PostMapping
     @Operation(summary = "Create a new venue.")
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
     public ResponseEntity<VenueResponseDTO> createVenue(@Valid @RequestBody VenueRequestDTO dto) {
 
         // 1. traducimos el dto de entrada a modelo de dominio
@@ -73,6 +75,7 @@ public class VenueController {
     // ------------------ 4. PUT /venues/{id} (Actualizar) ------------------
     @PutMapping("/{id}")
     @Operation(summary = "Update an existing venue by its ID.")
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
     public ResponseEntity<VenueResponseDTO> updateVenue(@PathVariable Long id, @Valid @RequestBody VenueRequestDTO dto) {
 
         // Traducimos el dto a modelo
@@ -90,6 +93,7 @@ public class VenueController {
     // ------------------ 5. DELETE /venues/{id} (Eliminar) ------------------
     @DeleteMapping("/{id}")
     @Operation(summary = "Remove a venue by its ID.")
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
     public ResponseEntity<Void> deleteVenue(@PathVariable Long id) {
 
         // Llamamos al caso de uso

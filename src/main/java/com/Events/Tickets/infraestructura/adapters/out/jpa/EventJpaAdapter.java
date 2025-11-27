@@ -4,7 +4,7 @@ import com.Events.Tickets.dominio.model.Event;
 import com.Events.Tickets.dominio.model.Venue;
 import com.Events.Tickets.dominio.ports.out.EventRepositoryPort;
 import com.Events.Tickets.dominio.ports.out.VenueRepositoryPort;
-import com.Events.Tickets.entity.EventType;
+import com.Events.Tickets.dominio.enums.EventType;
 import com.Events.Tickets.exception.ResourceNotFoundException;
 import com.Events.Tickets.infraestructura.adapters.out.jpa.entity.EventEntity;
 import com.Events.Tickets.infraestructura.adapters.out.jpa.entity.VenueEntity;

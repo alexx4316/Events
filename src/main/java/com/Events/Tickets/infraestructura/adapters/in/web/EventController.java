@@ -3,7 +3,7 @@ package com.Events.Tickets.infraestructura.adapters.in.web;
 import com.Events.Tickets.dominio.model.Event;
 import com.Events.Tickets.infraestructura.adapters.in.web.dto.request.EventRequestDTO;
 import com.Events.Tickets.infraestructura.adapters.in.web.dto.response.EventResponseDTO;
-import com.Events.Tickets.entity.EventType;
+import com.Events.Tickets.dominio.enums.EventType;
 import com.Events.Tickets.dominio.ports.in.ManageEventUseCase;
 import com.Events.Tickets.infraestructura.adapters.in.web.mappers.EventWebMapper;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -37,6 +38,7 @@ public class EventController {
     @PostMapping
     @Operation(summary = "Create a new Event.",
             description = "It requires the ID of an existing Venue and applies validations such as future dates and required fields.")
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
     public ResponseEntity<EventResponseDTO> createEvent(@Valid @RequestBody EventRequestDTO dto) {
 
         // Convertimos el dto a modelo de dominio
@@ -98,6 +100,7 @@ public class EventController {
     @PutMapping("/{id}")
     @Operation(summary = "Update an existing Event by its ID.",
             description = "It applies field validations and name uniqueness..")
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
     public ResponseEntity<EventResponseDTO> updateEvent(@PathVariable Long id, @Valid @RequestBody EventRequestDTO dto) {
 
         // Convertimos de dto a modelo
@@ -113,6 +116,7 @@ public class EventController {
     // ------------------ DELETE /events/{id} (Eliminar Evento) ------------------
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete an Event by its ID.")
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
     public ResponseEntity<List<EventResponseDTO>> deleteEvent(@PathVariable Long id) {
 
         // Ejecutamos el caso de uso

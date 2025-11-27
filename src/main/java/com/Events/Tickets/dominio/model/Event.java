@@ -1,7 +1,7 @@
 package com.Events.Tickets.dominio.model;
 
 
-import com.Events.Tickets.entity.EventType;
+import com.Events.Tickets.dominio.enums.EventType;
 import java.time.LocalDateTime;
 
 public class Event {

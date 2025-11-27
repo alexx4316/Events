@@ -1,4 +1,4 @@
-package com.Events.Tickets.entity;
+package com.Events.Tickets.dominio.enums;
 
 public enum EventType {
     CONCERT,

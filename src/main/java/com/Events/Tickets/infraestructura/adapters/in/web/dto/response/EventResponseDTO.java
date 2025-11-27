@@ -1,6 +1,6 @@
 package com.Events.Tickets.infraestructura.adapters.in.web.dto.response;
 
-import com.Events.Tickets.entity.EventType;
+import com.Events.Tickets.dominio.enums.EventType;
 import lombok.*;
 import java.time.Instant;
 import java.time.LocalDateTime;
