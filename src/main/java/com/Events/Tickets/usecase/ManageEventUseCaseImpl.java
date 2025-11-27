@@ -6,7 +6,7 @@ import com.Events.Tickets.dominio.model.Venue;
 import com.Events.Tickets.dominio.ports.in.ManageEventUseCase;
 import com.Events.Tickets.dominio.ports.in.ManageVenueUseCase;
 import com.Events.Tickets.dominio.ports.out.EventRepositoryPort;
-import com.Events.Tickets.entity.EventType;
+import com.Events.Tickets.dominio.enums.EventType;
 import com.Events.Tickets.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
