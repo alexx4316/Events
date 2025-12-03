@@ -47,7 +47,7 @@ class ManageUserUseCaseImplTest {
 
         // 2. Mockeamos el objeto User que sería devuelto por la base de datos
         // Nota: Asegurarse que el constructor de User permite estos valores
-        savedUserMock = new User(1L, "testuser", encodedPassword, Role.USER, null, null);
+        savedUserMock = new User(1L, "testuser", "test@example.com", encodedPassword, Role.USER, null, null);
     }
 
     @Test

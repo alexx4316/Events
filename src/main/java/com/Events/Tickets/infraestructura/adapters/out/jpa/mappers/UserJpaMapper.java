@@ -13,6 +13,7 @@ public class UserJpaMapper {
         return UserEntity.builder()
                 .id(user.getId())
                 .username(user.getUsername())
+                .email(user.getEmail())
                 .password(user.getPassword())
                 .role(user.getRole())
                 .createdAt(user.getCreatedAt())
@@ -26,6 +27,7 @@ public class UserJpaMapper {
         return new User(
                 entity.getId(),
                 entity.getUsername(),
+                entity.getEmail(),
                 entity.getPassword(),
                 entity.getRole(),
                 entity.getCreatedAt(),
