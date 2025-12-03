@@ -8,29 +8,45 @@ import com.Events.Tickets.infraestructura.adapters.out.jpa.repository.UserReposi
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
 public class UserJpaAdapter implements UserRepositoryPort {
 
-    private final UserRepository userRepository;
-    private final UserJpaMapper userJpaMapper;
+    private final UserRepository repository;
+    private final UserJpaMapper mapper;
+
     @Override
     public User save(User user) {
+        UserEntity entity = mapper.toEntity(user);
+        UserEntity saved = repository.save(entity);
+        return mapper.toDomain(saved);
+    }
 
-        // Dominio - entidad
-        UserEntity entity = userJpaMapper.toEntity(user);
+    @Override
+    public Optional<User> findById(Long id) {
+        return repository.findById(id)
+                .map(mapper::toDomain);
+    }
 
-        // Persistencia de datos
-        UserEntity savedEntity = userRepository.save(entity);
-
-        // Entidad - dominio
-        return userJpaMapper.toDomain(savedEntity);
+    @Override
+    public Optional<User> findByEmail(String email) {
+        return repository.findByEmail(email)
+                .map(mapper::toDomain);
     }
 
     @Override
     public Optional<User> findByUsername(String username) {
-        return userRepository.findByUsername(username).map(userJpaMapper::toDomain);
+        return repository.findByUsername(username);
+    }
+
+    @Override
+    public List<User> findAll() {
+        return repository.findAll()
+                .stream()
+                .map(mapper::toDomain)
+                .toList();
     }
 }

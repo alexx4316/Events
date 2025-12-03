@@ -1,5 +1,3 @@
-// com.Events.Tickets.infraestructura.adapters.in.web.AuthController
-
 package com.Events.Tickets.infraestructura.adapters.in.web;
 
 import com.Events.Tickets.dominio.enums.Role;
@@ -15,8 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -26,26 +22,19 @@ public class AuthController {
 
     private final AuthenticationManager authenticationManager;
     private final ManageUserUseCase manageUserUseCase;
-    private final JwtService jwtService;
+    private final JwtService jwtService; // Se mantiene por si se usa en otros flujos
 
     // ----------------------------------------------------
     // ENDPOINT 1: REGISTRO (/auth/register)
     // ----------------------------------------------------
     @PostMapping("/register")
-    public ResponseEntity<User> registerUser(@RequestBody @Valid RegisterRequestDTO request) {
+    public ResponseEntity<AuthResponseDTO> registerUser(@RequestBody @Valid RegisterRequestDTO request) {
 
-        // 1. Mapear DTO a Dominio (asumiendo el rol por defecto)
-        User newUser = new User();
+        // El Caso de Uso maneja la lógica de negocio (validación, cifrado, mapeo, token).
+        AuthResponseDTO response = manageUserUseCase.register(request);
 
-        // Establecemos solo los campos que vienen del DTO
-        newUser.setUsername(request.username());
-        newUser.setRole(Role.USER);
-
-        // 2. Llamar al Caso de Uso (donde se cifra la contraseña)
-        User registeredUser = manageUserUseCase.registerUser(newUser, request.password());
-
-        // 3. Devolver la representación del usuario registrado
-        return new ResponseEntity<>(registeredUser, HttpStatus.CREATED);
+        // Devuelve el token con estado 201 CREATED.
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     // ----------------------------------------------------
@@ -54,19 +43,21 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<AuthResponseDTO> login(@RequestBody @Valid LoginRequestDTO request) {
 
-        // 1. Intenta autenticar. Si las credenciales son incorrectas, lanza una excepción.
-        Authentication authentication = authenticationManager.authenticate(
+        // 1. Intenta autenticar. Si las credenciales son incorrectas, lanza una excepción
+        // y el controlador retorna un error (manejo automático de Spring Security).
+        // Usamos request.email() como el 'username' para el token.
+        authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        request.username(),
+                        request.email(),
                         request.password()
                 )
         );
 
-        // 2. Si es exitoso, genera el token usando los detalles del usuario autenticado
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        // 2. Si la autenticación es exitosa, delega al Caso de Uso para generar el token
+        // y cualquier otra lógica de login.
+        AuthResponseDTO response = manageUserUseCase.login(request);
 
-        String jwtToken = jwtService.generateToken(userDetails);
-
-        return ResponseEntity.ok(new AuthResponseDTO(jwtToken));
+        // 3. Devuelve la respuesta con el token.
+        return ResponseEntity.ok(response);
     }
 }
