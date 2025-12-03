@@ -15,11 +15,13 @@ public class User {
     public User() {
     }
 
-    public User(Long id, String username, String password, Role role) {
+    public User(Long id, String username, String password, Role role, Instant createdAt, Instant updatedAt) {
         this.id = id;
         this.username = username;
         this.password = password;
         this.role = role;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
     public Long getId() {

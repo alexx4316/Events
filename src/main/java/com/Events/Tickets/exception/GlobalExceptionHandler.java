@@ -83,7 +83,7 @@ public class GlobalExceptionHandler {
 
     // ------------------ 3. Manejo de 400 Bad Request (Validación) ------------------
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ProblemDetail handleDataConflict (MethodArgumentNotValidException ex, WebRequest request) {
+    public ProblemDetail handleValidationError (MethodArgumentNotValidException ex, WebRequest request) {
 
         ProblemDetail pd = createBaseProblemDetail(
                 HttpStatus.BAD_REQUEST,
@@ -91,16 +91,16 @@ public class GlobalExceptionHandler {
                 "Uno o más campos de entrada no son válidos.",
                 request
         );
-        pd.setType(URI.create("/errors/validation-failure"));
 
         // Mapea los errores de validación
         Map<String, String> errors = ex.getBindingResult().getFieldErrors().stream()
                 .collect(Collectors.toMap(
                         FieldError::getField,
-                        FieldError::getDefaultMessage // Mensaje de messages.properties
+                        FieldError::getDefaultMessage
                 ));
 
-        // 🔑 Incluir el mapa de errores en el ProblemDetail (propiedad personalizada)
+        // Incluir el mapa de errores en el ProblemDetail (propiedad personalizada)
+        pd.setType(URI.create("/errors/validation-failure"));
         pd.setProperty("errors", errors);
 
         return pd;

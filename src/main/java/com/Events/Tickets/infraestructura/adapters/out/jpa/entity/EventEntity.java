@@ -2,9 +2,7 @@ package com.Events.Tickets.infraestructura.adapters.out.jpa.entity;
 
 import com.Events.Tickets.dominio.enums.EventType;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -15,6 +13,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
+@Builder
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "events", uniqueConstraints = {@UniqueConstraint(columnNames = "name")})
 public class EventEntity extends BaseAuditableEntity {

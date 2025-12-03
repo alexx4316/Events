@@ -18,6 +18,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
+@Builder
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "venues", uniqueConstraints = {@UniqueConstraint(columnNames = {"name", "city"})})
 public class VenueEntity extends BaseAuditableEntity{

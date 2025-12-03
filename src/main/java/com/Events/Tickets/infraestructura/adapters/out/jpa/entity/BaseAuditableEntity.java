@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 @Setter
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
-@SuperBuilder // 1. Usar @SuperBuilder en la clase padre
+@SuperBuilder
 @NoArgsConstructor
 public abstract class BaseAuditableEntity {
 

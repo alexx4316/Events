@@ -2,22 +2,34 @@ package com.Events.Tickets.infraestructura.adapters.out.jpa.mappers;
 
 import com.Events.Tickets.dominio.model.User;
 import com.Events.Tickets.infraestructura.adapters.out.jpa.entity.UserEntity;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
+import org.springframework.stereotype.Component;
 
-@Mapper(componentModel = "spring")
-public interface UserJpaMapper {
+@Component
+public class UserJpaMapper {
 
-    // Conversión de Dominio a Entidad
-    @Mapping(target = "id", ignore = true)
-    UserEntity toEntity(User domain);
+    public UserEntity toEntity(User user) {
+        if (user == null) return null;
 
-    // Conversión de Entidad a Dominio
-    @Mapping(source = "id", target = "id")
-    @Mapping(source = "username", target = "username")
-    @Mapping(source = "password", target = "password")
-    @Mapping(source = "role", target = "role")
-    @Mapping(source = "createdAt", target = "createdAt")
-    @Mapping(source = "updatedAt", target = "updatedAt")
-    User toDomain(UserEntity entity);
+        return UserEntity.builder()
+                .id(user.getId())
+                .username(user.getUsername())
+                .password(user.getPassword())
+                .role(user.getRole())
+                .createdAt(user.getCreatedAt())
+                .updatedAt(user.getUpdatedAt())
+                .build();
+    }
+
+    public User toDomain(UserEntity entity) {
+        if (entity == null) return null;
+
+        return new User(
+                entity.getId(),
+                entity.getUsername(),
+                entity.getPassword(),
+                entity.getRole(),
+                entity.getCreatedAt(),
+                entity.getUpdatedAt()
+        );
+    }
 }

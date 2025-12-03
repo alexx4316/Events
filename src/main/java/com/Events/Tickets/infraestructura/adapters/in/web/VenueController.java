@@ -1,6 +1,7 @@
 package com.Events.Tickets.infraestructura.adapters.in.web;
 
 import com.Events.Tickets.dominio.model.Venue;
+import com.Events.Tickets.exception.ResourceNotFoundException;
 import com.Events.Tickets.infraestructura.adapters.in.web.dto.request.VenueRequestDTO;
 import com.Events.Tickets.infraestructura.adapters.in.web.dto.response.VenueResponseDTO;
 import com.Events.Tickets.dominio.ports.in.ManageVenueUseCase;
@@ -50,7 +51,7 @@ public class VenueController {
     public ResponseEntity<VenueResponseDTO> getVenueById(@PathVariable Long id) {
 
         // Llamamos al caso de uso
-        Venue venue = manageVenueUseCase.findById(id).orElseThrow(()-> new RuntimeException("Venue not found"));
+        Venue venue = manageVenueUseCase.findById(id).orElseThrow(()-> new ResourceNotFoundException("Venue not found"));
 
         // Traduciomos el modelo de dominio a dto de respuesta
         VenueResponseDTO responseDTO = webMapper.toResponseDto(venue);
